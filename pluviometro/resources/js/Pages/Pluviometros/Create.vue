@@ -45,7 +45,7 @@ const submit = () => {
 
   <AuthenticatedLayout>
     <template #header>
-      <h2 class="text-xl font-semibold leading-tight text-gray-800 text-center">
+      <h2 class="text-xl mt-3 mb-3 font-semibold leading-tight text-gray-800 text-center">
         {{ isEdit ? 'Editar pluviômetro' : 'Novo pluviômetro' }}
       </h2>
     </template>

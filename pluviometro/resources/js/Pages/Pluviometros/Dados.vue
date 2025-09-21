@@ -110,7 +110,7 @@ onMounted(() => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 text-center">
+            <h2 class="text-xl mt-3 mb-3 font-semibold leading-tight text-gray-800 text-center">
                 Pluviômetros
             </h2>
         </template>
@@ -132,10 +132,19 @@ onMounted(() => {
                         <td>{{ item.temperatura }}</td>
                         <td>{{ item.umidade }}</td>
                         <td>{{ item.chuva }}</td>
-                        <td>{{ new Date(item.data_hora).toLocaleString('pt-BR', {
-                            day: '2-digit', month: '2-digit',
-                            year:
-                            'numeric', hour: '2-digit', minute: '2-digit' }) }}</td>
+                        <td>
+                            {{
+                                item.data_hora && new Date(item.data_hora).getFullYear() > 2000
+                                    ? new Date(item.data_hora).toLocaleString('pt-BR', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                            })
+                            : 'Ainda não recebido'
+                            }}
+                        </td>
                         <td class="text-center">
                             <a :href="`/pluviometros/${item.id_pluviometro}/edit`" class="text-primary me-2">
                                 <i class="material-icons">&#xE254;</i>

@@ -110,7 +110,7 @@ onMounted(() => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 text-center">
+            <h2 class="text-xl mt-3 mb-3 font-semibold leading-tight text-gray-800 text-center">
                 Pluviômetros
             </h2>
         </template>
@@ -125,7 +125,9 @@ onMounted(() => {
                     <tr>
                         <th>Código</th>
                         <th>Nome</th>
+                        <th>Cidade</th>
                         <th>Enviado último dado</th>
+                        <th>Status</th>
                         <th class="no-export text-center">Ações</th>
                     </tr>
                 </thead>
@@ -133,10 +135,35 @@ onMounted(() => {
                     <tr v-for="item in pluviometros" :key="item.id_pluviometro">
                         <td>{{ item.numero_serie }}</td>
                         <td>{{ item.nome }}</td>
-                        <td>{{ new Date(item.data_hora).toLocaleString('pt-BR', {
-                            day: '2-digit', month: '2-digit',
-                            year:
-                            'numeric', hour: '2-digit', minute: '2-digit' }) }}</td>
+                        <td>{{ item.cidade }} - {{ item.estado }}</td>
+                        <td>
+                            {{
+                                item.data_hora && new Date(item.data_hora).getTime() > 0
+                                    ? new Date(item.data_hora).toLocaleString('pt-BR', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                            })
+                            : 'Ainda não recebido'
+                            }}
+                        </td>
+                        <td>
+  {{
+    item.data_hora && new Date(item.data_hora).getTime() > 0
+      ? (() => {
+          const now = new Date().getTime();
+          const dataHora = new Date(item.data_hora).getTime();
+          const diffHoras = (now - dataHora) / (1000 * 60 * 60);
+
+          if (diffHoras <= 24) return 'Online';
+          else return 'Offline';
+        })()
+      : 'Ainda não recebido'
+  }}
+</td>
+
                         <td class="text-center">
                             <a :href="`/pluviometros/${item.id_pluviometro}/edit`" class="text-primary me-2">
                                 <i class="material-icons">&#xE254;</i>

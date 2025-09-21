@@ -14,29 +14,25 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('register'), {
+    console.log('Submitting form');
+    form.post(route('register.store'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
+
 };
 </script>
 
 <template>
     <GuestLayout>
+
         <Head title="Register" />
 
         <form @submit.prevent="submit" class="p-3">
             <div class="mb-3">
                 <InputLabel for="name" value="Nome" />
 
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="form-control"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
+                <TextInput id="name" type="text" class="form-control" v-model="form.name" required autofocus
+                    autocomplete="name" />
 
                 <InputError class="form-text text-danger mt-1" :message="form.errors.name" />
             </div>
@@ -44,14 +40,8 @@ const submit = () => {
             <div class="mb-3">
                 <InputLabel for="email" value="Email" />
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="form-control"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
+                <TextInput id="email" type="email" class="form-control" v-model="form.email" required
+                    autocomplete="username" />
 
                 <InputError class="form-text text-danger mt-1" :message="form.errors.email" />
             </div>
@@ -59,14 +49,8 @@ const submit = () => {
             <div class="mb-3">
                 <InputLabel for="password" value="Senha" />
 
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="form-control"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
+                <TextInput id="password" type="password" class="form-control" v-model="form.password" required
+                    autocomplete="new-password" />
 
                 <InputError class="form-text text-danger mt-1" :message="form.errors.password" />
             </div>
@@ -74,33 +58,22 @@ const submit = () => {
             <div class="mb-3">
                 <InputLabel for="password_confirmation" value="Confirmar senha" />
 
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="form-control"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
+                <TextInput id="password_confirmation" type="password" class="form-control"
+                    v-model="form.password_confirmation" required autocomplete="new-password" />
 
                 <InputError class="form-text text-danger mt-1" :message="form.errors.password_confirmation" />
             </div>
 
             <div class="d-flex justify-content-end align-items-center">
-                <Link
-                    :href="route('login')"
-                    class="text-decoration-underline text-muted me-3"
-                >
-                    Já cadastrado?
+                <Link :href="route('login')" class="text-decoration-underline text-muted me-3">
+                Já cadastrado?
                 </Link>
 
-                <PrimaryButton
-                    class="btn btn-primary"
-                    :class="{ 'opacity-50': form.processing }"
-                    :disabled="form.processing"
-                >
+                <PrimaryButton type="submit" class="btn btn-primary" :class="{ 'opacity-50': form.processing }"
+                    :disabled="form.processing">
                     Cadastrar
                 </PrimaryButton>
+
             </div>
         </form>
     </GuestLayout>

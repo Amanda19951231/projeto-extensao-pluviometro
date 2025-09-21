@@ -75,8 +75,8 @@ watch([selectedStates, selectedRegions], updateMarkers);
   <Head title="Dashboard" />
   <AuthenticatedLayout>
     <template #header>
-      <h2 class="text-xl font-semibold leading-tight text-gray-800 text-center">
-        Sensores cadastrados
+      <h2 class="text-xl mt-3 mb-3 font-semibold leading-tight text-gray-800 text-center">
+        Nossos pluviômetros
       </h2>
     </template>
 

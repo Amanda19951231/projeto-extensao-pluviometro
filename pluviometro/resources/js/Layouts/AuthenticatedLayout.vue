@@ -1,6 +1,7 @@
 <script setup>
 import { ref, defineExpose } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 
 const showingNavDropdown = ref(false);
 
@@ -37,7 +38,7 @@ defineExpose({
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
             <div class="container-fluid">
                 <Link :href="route('dashboard')" class="navbar-brand">
-                <strong>PluvIFFar</strong>
+                <ApplicationLogo class="mb-3" style="height: 30px; width: 30px; fill: currentColor; color: #6c757d;" />
                 </Link>
 
                 <button class="navbar-toggler" type="button" @click="toggleNavDropdown"
@@ -69,18 +70,18 @@ defineExpose({
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" :class="{ show: showingNavDropdown }">
                                 <li>
-                                    <Link href="{{ route('profile.edit') }}" class="dropdown-item"
-                                        @click="closeNavDropdown">
-                                    Profile
+                                    <Link :href="route('profile.edit')" class="dropdown-item" @click="closeNavDropdown">
+                                    Perfil
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="{{ route('logout') }}" method="post" as="button" class="dropdown-item"
+                                    <Link :href="route('logout')" method="post" as="button" class="dropdown-item"
                                         @click="closeNavDropdown">
-                                    Log Out
+                                    Logout
                                     </Link>
                                 </li>
                             </ul>
+
                         </li>
                     </ul>
                 </div>

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 
 class PluviometrosController extends Controller
 {
@@ -26,6 +27,7 @@ class PluviometrosController extends Controller
     {
         $pluviometros = $this->obj_dados_pluviometro::join('pluviometros', 'dados_pluviometros.id_pluviometro', '=', 'pluviometros.id_pluviometro')
             ->select('pluviometros.*', 'dados_pluviometros.*')
+            ->orderBy('dados_pluviometros.data_hora', 'desc')
             ->get();
 
         $dados = [];
@@ -47,10 +49,12 @@ class PluviometrosController extends Controller
                 'id'           => $pluviometro->id_pluviometro,
                 'nome'         => $pluviometro->nome,
                 'numero_serie' => $pluviometro->numero_serie,
+                'data_hora'    => $pluviometro->data_hora,
+                // 'data_hora'    => Carbon::parse($pluviometro->data_hora)->format('d/m/Y H:i'),
                 'latitude'     => $pluviometro->latitude,
                 'longitude'    => $pluviometro->longitude,
-                'tempo'        => $pluviometro->tempo,
                 'chuva'        => $pluviometro->chuva,
+                'cidade'       => $pluviometro->cidade,
                 'umidade_api'  => $data['hourly']['relative_humidity_2m'][0] ?? null,
                 'temperatura_api' => $data['hourly']['temperature_2m'][0] ?? null,
                 'api_bruta'    => $data['current_weather'] ?? [],
@@ -70,6 +74,7 @@ class PluviometrosController extends Controller
         $pluviometros = $this->obj_pluviometro::leftjoin('dados_pluviometros', 'pluviometros.id_pluviometro', '=', 'dados_pluviometros.id_pluviometro')
             ->select('pluviometros.*', 'dados_pluviometros.*')
             ->get();
+            // dd($pluviometros);
 
         // Retornar a view com os tipos de peneiras
         return Inertia::render('Pluviometros/Dados', [
@@ -97,9 +102,8 @@ class PluviometrosController extends Controller
             ->selectRaw('MAX(data_hora) as ultima_data')
             ->groupBy('id_pluviometro');
 
-
         $pluviometros = $this->obj_pluviometro
-            ::joinSub($subquery, 'ultimos', function ($join) {
+            ::leftjoinSub($subquery, 'ultimos', function ($join) {
                 $join->on('pluviometros.id_pluviometro', '=', 'ultimos.id_pluviometro');
             })
             ->leftJoin('dados_pluviometros', function ($join) {
