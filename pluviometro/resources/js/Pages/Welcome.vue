@@ -353,6 +353,9 @@ onMounted(() => {
 
 
 <template>
+    
+    <Head title="PluvIFFar" />
+
     <div class="sky">
         <div class="cloud c1"></div>
         <div class="cloud c2"></div>
