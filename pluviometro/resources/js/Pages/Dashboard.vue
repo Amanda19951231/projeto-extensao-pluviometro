@@ -5,81 +5,78 @@ import { ref, onMounted, watch } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Recebe dados via props (Inertia)
+// Props
 const props = defineProps({
   pluviometros: Array
 });
 
-// Estados selecionados e regiões selecionadas
+// Filtros
 const selectedStates = ref([]);
 const selectedRegions = ref([]);
 
-// Mapeamento de estado para região
+// Estado -> Região
 const estadoParaRegiao = {
-  'RS': 'sul', 'SC': 'sul', 'PR': 'sul',
-  'GO': 'centro-oeste', 'MT': 'centro-oeste', 'MS': 'centro-oeste', 'DF': 'centro-oeste',
-  'AM': 'norte', 'PA': 'norte', 'RO': 'norte', 'RR': 'norte', 'AC': 'norte', 'AP': 'norte', 'TO': 'norte',
-  'MA': 'nordeste', 'PI': 'nordeste', 'CE': 'nordeste', 'RN': 'nordeste', 'PB': 'nordeste', 'PE': 'nordeste', 'AL': 'nordeste', 'SE': 'nordeste', 'BA': 'nordeste',
-  'SP': 'sudeste', 'RJ': 'sudeste', 'ES': 'sudeste', 'MG': 'sudeste'
+  'RS': 'sul','SC': 'sul','PR': 'sul',
+  'GO': 'centro-oeste','MT': 'centro-oeste','MS': 'centro-oeste','DF': 'centro-oeste',
+  'AM': 'norte','PA': 'norte','RO': 'norte','RR': 'norte','AC': 'norte','AP': 'norte','TO': 'norte',
+  'MA': 'nordeste','PI': 'nordeste','CE': 'nordeste','RN': 'nordeste','PB': 'nordeste','PE': 'nordeste','AL': 'nordeste','SE': 'nordeste','BA': 'nordeste',
+  'SP': 'sudeste','RJ': 'sudeste','ES': 'sudeste','MG': 'sudeste'
 };
 
 let map;
 let markersLayer;
 
+// Força Leaflet a usar apenas seus ícones
 delete L.Icon.Default.prototype._getIconUrl;
-// ícone custom (link que você passou)
+
+// Ícone custom
 const greenIcon = L.icon({
-  iconUrl: '/leaflet/marker-icon-2x-blue.png',
+  iconUrl: '/leaflet/marker-icon-2x-blue.png',  // mover pra public/leaflet/
   shadowUrl: '/leaflet/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowSize: [41, 41]
 });
-// Função para (re)desenhar marcadores conforme filtros
+
+// Atualiza marcadores conforme filtros
 function updateMarkers() {
   markersLayer.clearLayers();
   props.pluviometros
-    .filter(pluvio => {
-      // Filtro de estado
-      if (selectedStates.value.length && !selectedStates.value.includes(pluvio.estado)) {
-        return false;
-      }
-      // Filtro de região
-      const reg = estadoParaRegiao[pluvio.estado];
-      if (selectedRegions.value.length && !selectedRegions.value.includes(reg)) {
-        return false;
-      }
-      return pluvio.latitude && pluvio.longitude;
+    .filter(p => {
+      if (selectedStates.value.length && !selectedStates.value.includes(p.estado)) return false;
+      const reg = estadoParaRegiao[p.estado];
+      if (selectedRegions.value.length && !selectedRegions.value.includes(reg)) return false;
+      return p.latitude && p.longitude;
     })
-    .forEach(pluvio => {
-      L.marker([pluvio.latitude, pluvio.longitude], { icon: greenIcon })
+    .forEach(p => {
+      L.marker([p.latitude, p.longitude], { icon: greenIcon })
         .addTo(markersLayer)
         .bindPopup(
-          `<b>${pluvio.numero_serie}</b><br>` +
-          `<b>${pluvio.nome}</b><br>` +
-          `<b>${pluvio.endereco}, ${pluvio.numero}</b><br>` +
-          `${pluvio.cidade} - ${pluvio.cep} - ${pluvio.estado}`
+          `<b>${p.numero_serie}</b><br>` +
+          `<b>${p.nome}</b><br>` +
+          `<b>${p.endereco}, ${p.numero}</b><br>` +
+          `${p.cidade} - ${p.cep} - ${p.estado}`
         );
     });
 }
 
+// Inicializa mapa
 onMounted(() => {
   map = L.map('map').setView([-15.7801, -47.9292], 4);
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors',
   }).addTo(map);
 
-  // LayerGroup para facilitar limpeza de marcadores
   markersLayer = L.layerGroup().addTo(map);
-
-  // Desenha marcadores iniciais
   updateMarkers();
 });
 
-// Observa mudanças nos filtros
+// Observa filtros
 watch([selectedStates, selectedRegions], updateMarkers);
 </script>
+
 <template>
 
   <Head title="Dashboard" />
