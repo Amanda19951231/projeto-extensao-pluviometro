@@ -5,16 +5,6 @@ import { ref, onMounted, watch } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Remove referência antiga
-delete L.Icon.Default.prototype._getIconUrl;
-
-// Aponta para os seus arquivos corretos
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: '/storage/leaflet/marker-icon-2x.png',
-  iconUrl: '/storage/leaflet/marker-icon.png',
-  shadowUrl: '/storage/leaflet/marker-shadow.png',
-});
-
 // Recebe dados via props (Inertia)
 const props = defineProps({
   pluviometros: Array
@@ -36,16 +26,16 @@ const estadoParaRegiao = {
 let map;
 let markersLayer;
 
+delete L.Icon.Default.prototype._getIconUrl;
 // ícone custom (link que você passou)
 const greenIcon = L.icon({
-  iconUrl: '/storage/leaflet/marker-icon-2x-blue.png',
-  shadowUrl: '/storage/leaflet/marker-shadow.png',
+  iconUrl: '/leaflet/marker-icon-2x-blue.png',
+  shadowUrl: '/leaflet/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowSize: [41, 41]
 });
-
 // Função para (re)desenhar marcadores conforme filtros
 function updateMarkers() {
   markersLayer.clearLayers();
