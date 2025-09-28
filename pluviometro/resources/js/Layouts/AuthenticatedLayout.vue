@@ -33,6 +33,7 @@ defineExpose({
     },
 });
 </script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></link>
 <template>
     <div>
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">

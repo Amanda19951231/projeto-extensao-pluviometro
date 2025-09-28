@@ -26,6 +26,18 @@ const estadoParaRegiao = {
 let map;
 let markersLayer;
 
+// ícone custom (link que você passou)
+const greenIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  // sombra padrão do leaflet (usando CDN)
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  // tamanho/âncoras (mantém proporção visual padrão do Leaflet)
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 // Função para (re)desenhar marcadores conforme filtros
 function updateMarkers() {
   markersLayer.clearLayers();
@@ -43,7 +55,7 @@ function updateMarkers() {
       return pluvio.latitude && pluvio.longitude;
     })
     .forEach(pluvio => {
-      L.marker([pluvio.latitude, pluvio.longitude])
+      L.marker([pluvio.latitude, pluvio.longitude], { icon: greenIcon })
         .addTo(markersLayer)
         .bindPopup(
           `<b>${pluvio.numero_serie}</b><br>` +
@@ -70,7 +82,6 @@ onMounted(() => {
 // Observa mudanças nos filtros
 watch([selectedStates, selectedRegions], updateMarkers);
 </script>
-
 <template>
   <Head title="Dashboard" />
   <AuthenticatedLayout>

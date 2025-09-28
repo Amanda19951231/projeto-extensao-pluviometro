@@ -356,7 +356,7 @@ onMounted(() => {
 
 <template>
 
-    <Head title="PluvIFFar" />
+    <Head title="Sistema de Monitoramento de Chuvas" />
 
     <div class="sky">
         <div class="cloud c1"></div>

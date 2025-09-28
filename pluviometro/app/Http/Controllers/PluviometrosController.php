@@ -326,71 +326,53 @@ class PluviometrosController extends Controller
         }
     }
 
-    public function destroy($id_tipo_peneira)
+    public function destroy($id)
     {
         try {
-            // Buscar o tipo de peneira pelo ID
-            $tipo_peneira = $this->obj_tipo_peneira->find($id_tipo_peneira);
+            // Buscar o pluviômetro pelo ID
+            $pluviometro = $this->obj_pluviometro->find($id);
 
-            // Verificar se o tipo de peneira existe
-            if (!$tipo_peneira) {
-                // Registrar erro no arquivo de log
-                Log::error('Tipo de peneira não encontrado para exclusão.', [
+            // Verificar se o pluviômetro existe
+            if (!$pluviometro) {
+                Log::error('Pluviômetro não encontrado para exclusão.', [
                     'user_id' => auth()->id(),
                     'username' => auth()->user()->name ?? 'Guest',
-                    'tabela' => 'tipos_peneiras',
+                    'tabela' => 'pluviometros',
                     'acao' => 'exclusão',
-                    'id_tipo_peneira' => $id_tipo_peneira,
+                    'id_pluviometro' => $id,
                     'timestamp' => now(),
                 ]);
-
-                // Redirecionar com mensagem de erro
-                return redirect()->route('tipos_peneiras.index')->with('warning', 'Tipo de peneira não encontrado.');
+                return redirect()->route('pluviometros')->with('warning', 'Pluviômetro não encontrado.');
             }
 
-            // Dados antigos para log
-            $dados_antigos = $tipo_peneira;
+            $dados_antigos = $pluviometro->toArray();
 
             // Excluir o registro
-            $tipo_peneira->delete();
-
-            // Registrar log de exclusão no banco
-            ModelPedidosLogs::create([
-                'user_id' => auth()->user()->id,
-                'user_name' => auth()->user()->name ?? 'Guest',
-                'acao' => 'exclusão',
-                'dados_anteriores' => array_merge(
-                    ['tabela' => 'tipos_peneiras'],
-                    $dados_antigos->toArray()
-                ),
-            ]);
+            $pluviometro->delete();
 
             // Registrar log no arquivo de log
-            Log::info('Peneira excluída com sucesso.', [
+            Log::info('Pluviômetro excluído com sucesso.', [
                 'user_id' => auth()->id(),
                 'username' => auth()->user()->name ?? 'Guest',
-                'tabela' => 'tipos_peneiras',
-                'action' => 'exclusão',
+                'tabela' => 'pluviometros',
+                'acao' => 'exclusão',
+                'id_pluviometro' => $id,
                 'dados_antigos' => $dados_antigos,
                 'timestamp' => now(),
             ]);
 
-            // Redirecionar com mensagem de sucesso
-            return redirect()->route('tipos_peneiras.index')->with('success', 'Peneira excluída com sucesso.');
+            return redirect()->route('pluviometros')->with('success', 'Pluviômetro excluído com sucesso.');
         } catch (\Exception $e) {
-            // Registrar erro no arquivo de log
-            Log::error('Erro ao excluir a peneira.', [
+            Log::error('Erro ao excluir o pluviômetro.', [
                 'user_id' => auth()->id(),
                 'username' => auth()->user()->name ?? 'Guest',
-                'tabela' => 'tipos_peneiras',
+                'tabela' => 'pluviometros',
                 'acao' => 'exclusão',
-                'id_tipo_peneira' => $id_tipo_peneira,
+                'id_pluviometro' => $id,
                 'error_message' => $e->getMessage(),
                 'timestamp' => now(),
             ]);
-
-            // Redirecionar com mensagem de erro
-            return redirect()->route('tipos_peneiras.index')->with('error', 'Ocorreu um erro ao excluir a peneira: ' . $e->getMessage());
+            return redirect()->route('pluviometros')->with('error', 'Ocorreu um erro ao excluir o pluviômetro: ' . $e->getMessage());
         }
     }
 

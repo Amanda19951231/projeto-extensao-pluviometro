@@ -10,6 +10,8 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import 'datatables.net-buttons/js/buttons.html5';
 import 'datatables.net-buttons/js/buttons.print';
+import '@fortawesome/fontawesome-free/css/all.css';
+import '@fortawesome/fontawesome-free/js/all.js';
 
 pdfMake.vfs = pdfFonts.default;
 
@@ -103,7 +105,8 @@ onMounted(() => {
     });
 });
 </script>
-
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</link>
 <template>
 
     <Head title="Dashboard" />
@@ -143,48 +146,47 @@ onMounted(() => {
                                         day: '2-digit',
                                         month: '2-digit',
                                         year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                            })
-                            : 'Ainda não recebido'
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })
+                                    : 'Ainda não recebido'
                             }}
                         </td>
                         <td>
-  {{
-    item.data_hora && new Date(item.data_hora).getTime() > 0
-      ? (() => {
-          const now = new Date().getTime();
-          const dataHora = new Date(item.data_hora).getTime();
-          const diffHoras = (now - dataHora) / (1000 * 60 * 60);
+                            {{
+                                item.data_hora && new Date(item.data_hora).getTime() > 0
+                                    ? (() => {
+                                        const now = new Date().getTime();
+                                        const dataHora = new Date(item.data_hora).getTime();
+                                        const diffHoras = (now - dataHora) / (1000 * 60 * 60);
 
-          if (diffHoras <= 24) return 'Online';
-          else return 'Offline';
-        })()
-      : 'Ainda não recebido'
-  }}
-</td>
+                                        if (diffHoras <= 24) return 'Online'; else return 'Offline';
+                                    })() : 'Ainda não recebido'
+                            }} </td>
 
                         <td class="text-center">
-                            <a :href="`/pluviometros/${item.id_pluviometro}/edit`" class="text-primary me-2">
-                                <i class="material-icons">&#xE254;</i>
-                            </a>
-                            <form :action="`/pluviometros/${item.id_pluviometro}`" method="POST" class="d-inline">
-                                <input type="hidden" name="_method" value="DELETE" />
-                                <input type="hidden" name="_token" :value="csrfToken" />
-                                <button type="submit" class="btn btn-link text-danger p-0 m-0" style="cursor:pointer;">
-                                    <i class="material-icons">&#xE872;</i>
-                                </button>
-                            </form>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <a :href="`/pluviometros/${item.id_pluviometro}/edit`" class="text-primary me-2">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+
+                                <form :action="`/pluviometros/${item.id_pluviometro}`" method="POST"
+                                    class="d-inline m-0 p-0">
+                                    <input type="hidden" name="_method" value="DELETE" />
+                                    <input type="hidden" name="_token" :value="csrfToken" />
+                                    <button type="submit" class="btn btn-link text-danger p-0 m-0"
+                                        style="cursor:pointer;">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
-
                 </tbody>
             </table>
         </div>
     </AuthenticatedLayout>
 </template>
-
-
 <style scoped>
 /* Alinhamento de busca e paginação */
 div.dataTables_wrapper div.dataTables_filter,
