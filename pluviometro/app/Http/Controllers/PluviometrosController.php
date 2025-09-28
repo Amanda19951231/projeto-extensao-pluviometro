@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
 
 class PluviometrosController extends Controller
 {
@@ -23,58 +25,121 @@ class PluviometrosController extends Controller
         $this->obj_pluviometro = new ModelPluviometros();
     }
 
+    // public function dados()
+    // {
+    // set_time_limit(0); // sem limite de tempo
+    //     $pluviometros = $this->obj_dados_pluviometro::join('pluviometros', 'dados_pluviometros.id_pluviometro', '=', 'pluviometros.id_pluviometro')
+    //         ->select('pluviometros.*', 'dados_pluviometros.*')
+    //         ->orderBy('dados_pluviometros.data_hora', 'desc')
+    //         ->get();
+
+    //     $dados = [];
+
+    //     foreach ($pluviometros as $pluviometro) {
+    //         $response = Http::get('https://api.open-meteo.com/v1/forecast', [
+    //             'latitude'        => $pluviometro->latitude,
+    //             'longitude'       => $pluviometro->longitude,
+    //             'current_weather' => true,
+    //             'daily' => 'temperature_2m_max,temperature_2m_min,weathercode',
+    //             'timezone' => 'America/Sao_Paulo',
+    //             'hourly'          => 'temperature_2m,relative_humidity_2m',
+    //             'timezone'        => 'America/Sao_Paulo',
+    //         ]);
+
+    //         $data = $response->json();
+
+    //         $dados[] = [
+    //             'id'           => $pluviometro->id_pluviometro,
+    //             'nome'         => $pluviometro->nome,
+    //             'numero_serie' => $pluviometro->numero_serie,
+    //             'data_hora'    => $pluviometro->data_hora,
+    //             // 'data_hora'    => Carbon::parse($pluviometro->data_hora)->format('d/m/Y H:i'),
+    //             'latitude'     => $pluviometro->latitude,
+    //             'longitude'    => $pluviometro->longitude,
+    //             'chuva'        => $pluviometro->chuva,
+    //             'cidade'       => $pluviometro->cidade,
+    //             'umidade_api'  => $data['hourly']['relative_humidity_2m'][0] ?? null,
+    //             'temperatura_api' => $data['hourly']['temperature_2m'][0] ?? null,
+    //             'api_bruta'    => $data['current_weather'] ?? [],
+    //             'daily'   => $data['daily'], // Adiciona dados dos próximos dias
+    //         ];
+    //     }
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'data' => $dados
+    //     ]);
+    // }
+
     public function dados()
     {
+        set_time_limit(0); // sem limite de tempo
+
         $pluviometros = $this->obj_dados_pluviometro::join('pluviometros', 'dados_pluviometros.id_pluviometro', '=', 'pluviometros.id_pluviometro')
             ->select('pluviometros.*', 'dados_pluviometros.*')
             ->orderBy('dados_pluviometros.data_hora', 'desc')
             ->get();
+        // dd($pluviometros);
+        $client = new Client();
+        $promises = [];
+
+        // cria as promessas das requisições
+        foreach ($pluviometros as $pluviometro) {
+            $promises[$pluviometro->id_pluviometro] = $client->getAsync('https://api.open-meteo.com/v1/forecast', [
+                'query' => [
+                    'latitude'        => $pluviometro->latitude,
+                    'longitude'       => $pluviometro->longitude,
+                    'current_weather' => true,
+                    'daily'           => 'temperature_2m_max,temperature_2m_min,weathercode',
+                    'hourly'          => 'temperature_2m,relative_humidity_2m',
+                    'timezone'        => 'America/Sao_Paulo',
+                ]
+            ]);
+        }
+
+        // espera todas terminarem
+        $responses = Promise\Utils::settle($promises)->wait();
 
         $dados = [];
 
         foreach ($pluviometros as $pluviometro) {
-            $response = Http::get('https://api.open-meteo.com/v1/forecast', [
-                'latitude'        => $pluviometro->latitude,
-                'longitude'       => $pluviometro->longitude,
-                'current_weather' => true,
-                'daily' => 'temperature_2m_max,temperature_2m_min,weathercode',
-                'timezone' => 'America/Sao_Paulo',
-                'hourly'          => 'temperature_2m,relative_humidity_2m',
-                'timezone'        => 'America/Sao_Paulo',
-            ]);
+            $resp = $responses[$pluviometro->id_pluviometro];
 
-            $data = $response->json();
+            if ($resp['state'] === 'fulfilled') {
+                $data = json_decode($resp['value']->getBody(), true);
+            } else {
+                $data = [];
+            }
 
             $dados[] = [
-                'id'           => $pluviometro->id_pluviometro,
-                'nome'         => $pluviometro->nome,
-                'numero_serie' => $pluviometro->numero_serie,
-                'data_hora'    => $pluviometro->data_hora,
-                // 'data_hora'    => Carbon::parse($pluviometro->data_hora)->format('d/m/Y H:i'),
-                'latitude'     => $pluviometro->latitude,
-                'longitude'    => $pluviometro->longitude,
-                'chuva'        => $pluviometro->chuva,
-                'cidade'       => $pluviometro->cidade,
-                'umidade_api'  => $data['hourly']['relative_humidity_2m'][0] ?? null,
+                'id'              => $pluviometro->id_pluviometro,
+                'nome'            => $pluviometro->nome,
+                'numero_serie'    => $pluviometro->numero_serie,
+                'data_hora'       => $pluviometro->data_hora,
+                'latitude'        => $pluviometro->latitude,
+                'longitude'       => $pluviometro->longitude,
+                'chuva'           => $pluviometro->chuva,
+                'cidade'          => $pluviometro->cidade,
+                'umidade_api'     => $data['hourly']['relative_humidity_2m'][0] ?? null,
                 'temperatura_api' => $data['hourly']['temperature_2m'][0] ?? null,
-                'api_bruta'    => $data['current_weather'] ?? [],
-                'daily'   => $data['daily'], // Adiciona dados dos próximos dias
+                'api_bruta'       => $data['current_weather'] ?? [],
+                'daily'           => $data['daily'] ?? [],
             ];
         }
 
         return response()->json([
             'status' => 'success',
-            'data' => $dados
+            'data'   => $dados
         ]);
     }
-
+    
     public function pluviometros()
     {
         // Pega todos os pluviometros
         $pluviometros = $this->obj_pluviometro::leftjoin('dados_pluviometros', 'pluviometros.id_pluviometro', '=', 'dados_pluviometros.id_pluviometro')
             ->select('pluviometros.*', 'dados_pluviometros.*')
             ->get();
-            // dd($pluviometros);
+        // dd($pluviometros);
 
         // Retornar a view com os tipos de peneiras
         return Inertia::render('Pluviometros/Dados', [
@@ -327,5 +392,27 @@ class PluviometrosController extends Controller
             // Redirecionar com mensagem de erro
             return redirect()->route('tipos_peneiras.index')->with('error', 'Ocorreu um erro ao excluir a peneira: ' . $e->getMessage());
         }
+    }
+
+    public function store_dados_pluviometros(Request $request)
+    {
+        $dados = $request->all();
+
+        foreach ($dados as $dado) {
+            $pluviometro = $this->obj_pluviometro::where('numero_serie', $dado['numero_serie'])->first();
+            if (!$pluviometro) {
+                continue; // pula se não achar
+            }
+
+            $this->obj_dados_pluviometro->create([
+                'temperatura' => $dado['temperatura'] ?? 0,
+                'umidade' => $dado['umidade'] ?? 0,
+                'chuva' => $dado['chuva'] ?? 0,
+                'id_pluviometro' => $pluviometro->id_pluviometro,
+                'data_hora' => $dado['data_hora'] ?? now(),
+            ]);
+        }
+
+        return response()->json(['status' => 'ok']);
     }
 }

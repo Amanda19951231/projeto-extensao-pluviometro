@@ -12,7 +12,7 @@ Route::get('/', [WelcomeController::class, 'index']);
 
 Route::get('/pluviometro', [PluviometrosController::class, 'pluviometros']);
 Route::get('/pluviometros/dados', [PluviometrosController::class, 'dados'])->name('pluviometros.dados');
-    
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('/dashboard', function () {
     //     return Inertia::render('Dashboard');

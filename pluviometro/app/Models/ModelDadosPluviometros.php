@@ -12,10 +12,10 @@ class ModelDadosPluviometros extends Model
     protected $primaryKey = 'id_dados'; // Chave primária da tabela
 
     protected $fillable = [
-        'numero_serie', 
-        'nome', 
-        'latitude', 
-        'longitude',
-        'tempo',
+        'umidade', 
+        'chuva', 
+        'temperatura', 
+        'id_pluviometro',
+        'data_hora',
     ];
 }

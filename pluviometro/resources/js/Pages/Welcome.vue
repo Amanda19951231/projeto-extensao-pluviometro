@@ -275,11 +275,13 @@ const fetchData = async (granularity = 'day') => {
         })
         window.charts.line = new Chart(document.getElementById('lineChart'), {
             type: 'line',
-            data: { labels, datasets: [{ label: 'Chuva (mm)', data: rainData, borderColor: '#0d6efd', fill: false }] }
+            smooth: true,
+            data: { labels, datasets: [{ label: 'Chuva (mm)', data: rainData, borderColor: '#0d6efd', fill: true, tension: 0.4 }] }
         })
         window.charts.area = new Chart(document.getElementById('areaChart'), {
             type: 'line',
-            data: { labels, datasets: [{ label: 'Acúmulo', data: rainData, borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,0.3)', fill: true }] }
+            smooth: true,
+            data: { labels, datasets: [{ label: 'Acúmulo', data: rainData, borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,0.3)', fill: true, tension: 0.4 }] }
         })
         window.charts.stacked = new Chart(document.getElementById('stackedBarChart'), {
             type: 'bar',
@@ -353,7 +355,7 @@ onMounted(() => {
 
 
 <template>
-    
+
     <Head title="PluvIFFar" />
 
     <div class="sky">
@@ -426,11 +428,11 @@ onMounted(() => {
 
             <div class="col-auto">
                 <label for="filterRange" class="form-label small text-light">Período</label>
-            <select id="filterRange" v-model="filterRange" class="form-select form-select-sm bg-dark text-white">
-                <option value="day">Dia</option>
-                <option value="week">Semana</option>
-                <option value="month">Mês</option>
-            </select>
+                <select id="filterRange" v-model="filterRange" class="form-select form-select-sm bg-dark text-white">
+                    <option value="day">Dia</option>
+                    <option value="week">Semana</option>
+                    <option value="month">Mês</option>
+                </select>
             </div>
 
             <div class="col-auto d-flex align-items-end">
