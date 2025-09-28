@@ -5,6 +5,16 @@ import { ref, onMounted, watch } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+// Remove referência antiga
+delete L.Icon.Default.prototype._getIconUrl;
+
+// Aponta para os seus arquivos corretos
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: '/storage/leaflet/marker-icon-2x.png',
+  iconUrl: '/storage/leaflet/marker-icon.png',
+  shadowUrl: '/storage/leaflet/marker-shadow.png',
+});
+
 // Recebe dados via props (Inertia)
 const props = defineProps({
   pluviometros: Array
