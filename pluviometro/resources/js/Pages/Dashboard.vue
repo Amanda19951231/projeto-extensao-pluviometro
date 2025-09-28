@@ -28,8 +28,8 @@ let markersLayer;
 
 // ícone custom (link que você passou)
 const greenIcon = L.icon({
-  iconUrl: '/images/leaflet/marker-icon-2x-blue.png', // ou marker-icon-2x.png se for usar padrão
-  shadowUrl: '/images/leaflet/marker-shadow.png',
+  iconUrl: '/storage/leaflet/marker-icon-2x-blue.png',
+  shadowUrl: '/storage/leaflet/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -81,6 +81,7 @@ onMounted(() => {
 watch([selectedStates, selectedRegions], updateMarkers);
 </script>
 <template>
+
   <Head title="Dashboard" />
   <AuthenticatedLayout>
     <template #header>
@@ -98,14 +99,8 @@ watch([selectedStates, selectedRegions], updateMarkers);
             <!-- Filtro de Estado -->
             <div class="mb-4">
               <h5 class="mb-3">Estado</h5>
-              <select
-                id="estado-select"
-                multiple
-                class="form-select"
-                v-model="selectedStates"
-                aria-label="Seleção múltipla de estados"
-                style="height: 150px;"
-              >
+              <select id="estado-select" multiple class="form-select" v-model="selectedStates"
+                aria-label="Seleção múltipla de estados" style="height: 150px;">
                 <option value="EX">Exterior</option>
                 <option value="AC">AC</option>
                 <option value="AL">AL</option>
@@ -144,14 +139,9 @@ watch([selectedStates, selectedRegions], updateMarkers);
             <div>
               <h5 class="mb-3">Região</h5>
               <div class="d-flex flex-column gap-2">
-                <div class="form-check" v-for="reg in ['sul','centro-oeste','norte','nordeste','sudeste']" :key="reg">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    :value="reg"
-                    v-model="selectedRegions"
-                    :id="`regiao-${reg}`"
-                  />
+                <div class="form-check" v-for="reg in ['sul', 'centro-oeste', 'norte', 'nordeste', 'sudeste']" :key="reg">
+                  <input class="form-check-input" type="checkbox" :value="reg" v-model="selectedRegions"
+                    :id="`regiao-${reg}`" />
                   <label class="form-check-label" :for="`regiao-${reg}`">
                     {{ reg.charAt(0).toUpperCase() + reg.slice(1).replace('-', ' ') }}
                   </label>
