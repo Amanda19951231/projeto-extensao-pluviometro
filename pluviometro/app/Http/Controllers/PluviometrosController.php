@@ -71,67 +71,103 @@ class PluviometrosController extends Controller
     //     ]);
     // }
 
+    // public function dados()
+    // {
+    //     set_time_limit(0); // sem limite de tempo
+
+    //     $pluviometros = $this->obj_dados_pluviometro::join('pluviometros', 'dados_pluviometros.id_pluviometro', '=', 'pluviometros.id_pluviometro')
+    //         ->select('pluviometros.*', 'dados_pluviometros.*')
+    //         ->orderBy('dados_pluviometros.data_hora', 'desc')
+    //         ->get();
+    //     // dd($pluviometros);
+    //     $client = new Client();
+    //     $promises = [];
+
+    //     // cria as promessas das requisições
+    //     foreach ($pluviometros as $pluviometro) {
+    //         $promises[$pluviometro->id_pluviometro] = $client->getAsync('https://api.open-meteo.com/v1/forecast', [
+    //             'query' => [
+    //                 'latitude'        => $pluviometro->latitude,
+    //                 'longitude'       => $pluviometro->longitude,
+    //                 'current_weather' => true,
+    //                 'daily'           => 'temperature_2m_max,temperature_2m_min,weathercode',
+    //                 'hourly'          => 'temperature_2m,relative_humidity_2m',
+    //                 'timezone'        => 'America/Sao_Paulo',
+    //             ]
+    //         ]);
+    //     }
+
+    //     // espera todas terminarem
+    //     $responses = Promise\Utils::settle($promises)->wait();
+
+    //     $dados = [];
+
+    //     foreach ($pluviometros as $pluviometro) {
+    //         $resp = $responses[$pluviometro->id_pluviometro];
+
+    //         if ($resp['state'] === 'fulfilled') {
+    //             $data = json_decode($resp['value']->getBody(), true);
+    //         } else {
+    //             $data = [];
+    //         }
+
+    //         $dados[] = [
+    //             'id'              => $pluviometro->id_pluviometro,
+    //             'nome'            => $pluviometro->nome,
+    //             'numero_serie'    => $pluviometro->numero_serie,
+    //             'data_hora'       => $pluviometro->data_hora,
+    //             'latitude'        => $pluviometro->latitude,
+    //             'longitude'       => $pluviometro->longitude,
+    //             'chuva'           => $pluviometro->chuva,
+    //             'cidade'          => $pluviometro->cidade,
+    //             'umidade_api'     => $data['hourly']['relative_humidity_2m'][0] ?? null,
+    //             'temperatura_api' => $data['hourly']['temperature_2m'][0] ?? null,
+    //             'api_bruta'       => $data['current_weather'] ?? [],
+    //             'daily'           => $data['daily'] ?? [],
+    //         ];
+    //     }
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'data'   => $dados
+    //     ]);
+    // }
+
     public function dados()
-    {
-        set_time_limit(0); // sem limite de tempo
+{
+    set_time_limit(0); // sem limite de tempo
 
-        $pluviometros = $this->obj_dados_pluviometro::join('pluviometros', 'dados_pluviometros.id_pluviometro', '=', 'pluviometros.id_pluviometro')
-            ->select('pluviometros.*', 'dados_pluviometros.*')
-            ->orderBy('dados_pluviometros.data_hora', 'desc')
-            ->get();
-        // dd($pluviometros);
-        $client = new Client();
-        $promises = [];
+    $pluviometros = $this->obj_dados_pluviometro::join('pluviometros', 'dados_pluviometros.id_pluviometro', '=', 'pluviometros.id_pluviometro')
+        ->select('pluviometros.*', 'dados_pluviometros.*')
+        ->orderBy('dados_pluviometros.data_hora', 'asc')
+        ->get();
 
-        // cria as promessas das requisições
-        foreach ($pluviometros as $pluviometro) {
-            $promises[$pluviometro->id_pluviometro] = $client->getAsync('https://api.open-meteo.com/v1/forecast', [
-                'query' => [
-                    'latitude'        => $pluviometro->latitude,
-                    'longitude'       => $pluviometro->longitude,
-                    'current_weather' => true,
-                    'daily'           => 'temperature_2m_max,temperature_2m_min,weathercode',
-                    'hourly'          => 'temperature_2m,relative_humidity_2m',
-                    'timezone'        => 'America/Sao_Paulo',
-                ]
-            ]);
-        }
+    $dados = [];
 
-        // espera todas terminarem
-        $responses = Promise\Utils::settle($promises)->wait();
-
-        $dados = [];
-
-        foreach ($pluviometros as $pluviometro) {
-            $resp = $responses[$pluviometro->id_pluviometro];
-
-            if ($resp['state'] === 'fulfilled') {
-                $data = json_decode($resp['value']->getBody(), true);
-            } else {
-                $data = [];
-            }
-
-            $dados[] = [
-                'id'              => $pluviometro->id_pluviometro,
-                'nome'            => $pluviometro->nome,
-                'numero_serie'    => $pluviometro->numero_serie,
-                'data_hora'       => $pluviometro->data_hora,
-                'latitude'        => $pluviometro->latitude,
-                'longitude'       => $pluviometro->longitude,
-                'chuva'           => $pluviometro->chuva,
-                'cidade'          => $pluviometro->cidade,
-                'umidade_api'     => $data['hourly']['relative_humidity_2m'][0] ?? null,
-                'temperatura_api' => $data['hourly']['temperature_2m'][0] ?? null,
-                'api_bruta'       => $data['current_weather'] ?? [],
-                'daily'           => $data['daily'] ?? [],
-            ];
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'data'   => $dados
-        ]);
+    foreach ($pluviometros as $pluviometro) {
+        $dados[] = [
+            'id'           => $pluviometro->id_pluviometro,
+            'nome'         => $pluviometro->nome,
+            'numero_serie' => $pluviometro->numero_serie,
+            'data_hora'    => $pluviometro->data_hora,
+            'latitude'     => $pluviometro->latitude,
+            'longitude'    => $pluviometro->longitude,
+            'chuva'        => $pluviometro->chuva,
+            'cidade'       => $pluviometro->cidade,
+            // campos da API removidos
+            'umidade_api'     => null,
+            'temperatura_api' => null,
+            'api_bruta'       => [],
+            'daily'           => [],
+        ];
     }
+
+    return response()->json([
+        'status' => 'success',
+        'data'   => $dados
+    ]);
+}
+
     
     public function pluviometros()
     {

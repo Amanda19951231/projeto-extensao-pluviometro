@@ -81,7 +81,12 @@ const aggregateBy = (items, granularity = 'day', thresholds = { leve: 2, moderad
         else if (val < thresholds.moderada) entry.moderada += 1
         else entry.forte += 1
     }
-    const keys = Array.from(map.keys()).sort((a, b) => (a < b ? -1 : 1))
+    const keys = Array.from(map.keys()).sort((a, b) => {
+        const da = new Date(a.split('/').reverse().join('-'))
+        const db = new Date(b.split('/').reverse().join('-'))
+        return da - db
+    })
+
 
     const labels = keys
     const rainData = keys.map(k => parseFloat(map.get(k).chuva.toFixed(2)))
@@ -506,12 +511,12 @@ body {
 .sky,
 .rain {
     position: fixed;*/
-    /* fixa no fundo da tela 
+/* fixa no fundo da tela 
     width: 100%;
     height: 100%;
     pointer-events: none;
     z-index: 0;*/
-    /* atrás de todo o resto 
+/* atrás de todo o resto 
 }*/
 
 /*.raindrop {
