@@ -502,19 +502,19 @@ body {
     background: #0a0a0a;
 }
 
-/* Ajusta a chuva e nuvens pra não bloquear o scroll */
+/* Ajusta a chuva e nuvens pra não bloquear o scroll 
 .sky,
 .rain {
-    position: fixed;
-    /* fixa no fundo da tela */
+    position: fixed;*/
+    /* fixa no fundo da tela 
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 0;
-    /* atrás de todo o resto */
-}
+    z-index: 0;*/
+    /* atrás de todo o resto 
+}*/
 
-.raindrop {
+/*.raindrop {
     position: absolute;
     top: -10px;
     width: 2px;
@@ -566,10 +566,10 @@ body {
     height: 140%;
     left: 10%;
     filter: blur(calc(var(--cloud-blur) * 0.8));
-}
+} */
 
 /* clouds positions */
-.c1 {
+/* .c1 {
     width: 520px;
     height: 140px;
     top: 8%;
@@ -624,5 +624,5 @@ body {
     .c3 {
         display: none;
     }
-}
+}*/
 </style>
